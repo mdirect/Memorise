@@ -17,11 +17,11 @@ struct ContentView: View {
                 CardView(card: card).onTapGesture {
                     self.viewModel.choose(card: card)
                 }
+                .aspectRatio(2/3, contentMode: .fit)
             }
         }
             .padding()
             .foregroundColor(Color.green)
-            .font(Font.largeTitle)
     }
 }
 
@@ -29,16 +29,31 @@ struct CardView: View {
     var card: MemoryGame<String>.Card
     
     var body: some View {
+        GeometryReader(content: { geometry in
+            self.body(for: geometry.size)
+        })
+    }
+    
+    func body(for size: CGSize) -> some View {
         ZStack {
             if card.isFaceUp {
-                RoundedRectangle(cornerRadius: 15.0).fill(Color.white)
-                RoundedRectangle(cornerRadius: 15.0).stroke(lineWidth: 6)
+                RoundedRectangle(cornerRadius: cornerRadius).fill(Color.white)
+                RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: edgeLineWidth)
                 Text(card.content)
             } else {
-                RoundedRectangle(cornerRadius: 15.0).fill()
+                RoundedRectangle(cornerRadius: cornerRadius).fill()
             }
         }
+        .font(Font.system(size: fontSize(for: size)))
     }
+    
+    func fontSize(for size: CGSize) -> CGFloat {
+        min(size.width, size.height) * fontScaleFactor
+    }
+    
+    let cornerRadius: CGFloat = 15.0
+    let edgeLineWidth: CGFloat = 3
+    let fontScaleFactor: CGFloat = 0.75
 }
 
 struct ContentView_Previews: PreviewProvider {
